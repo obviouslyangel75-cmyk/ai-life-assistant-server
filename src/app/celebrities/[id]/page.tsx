@@ -103,7 +103,7 @@ export default async function CelebrityPage({ params }: Props) {
               {/* Tags */}
               {cel.tags && (
                 <div className="flex flex-wrap gap-2 mb-6">
-                  {cel.tags.split(',').map(tag => (
+                  {cel.tags.split(',').map((tag: string) => (
                     <span key={tag} className="px-3 py-1 bg-white/5 text-white/60 rounded-full text-sm border border-white/10">
                       #{tag.trim()}
                     </span>
@@ -157,7 +157,7 @@ export default async function CelebrityPage({ params }: Props) {
               <div className="mt-10">
                 <h2 className="font-display text-2xl font-bold mb-6">Fan <span className="text-gold-gradient">Reviews</span></h2>
                 <div className="space-y-4">
-                  {cel.reviews.map(review => (
+                  {cel.reviews.map((review: any) => (
                     <div key={review.id} className="glass-card rounded-2xl p-6">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-3">

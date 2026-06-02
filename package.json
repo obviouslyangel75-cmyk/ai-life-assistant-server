@@ -4,16 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",
-    "build": "prisma generate && next build",
+    "build": "next build",
     "start": "next start",
-    "db:push": "prisma db push",
-    "db:seed": "node --loader ts-node/esm prisma/seed.ts",
-    "seed": "npx ts-node --project tsconfig.seed.json prisma/seed.ts",
-    "postinstall": "prisma generate"
+    "firebase:seed": "npx ts-node --project tsconfig.seed.json scripts/firebase-seed.ts",
+    "legacy:seed": "npx ts-node --project tsconfig.seed.json prisma/seed.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.27.0",
     "@auth/prisma-adapter": "^2.4.2",
+    "@next-auth/firebase-adapter": "^2.0.1",
     "@prisma/client": "^5.17.0",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-dropdown-menu": "^2.1.1",
@@ -22,9 +21,12 @@
     "@radix-ui/react-slider": "^1.2.0",
     "@radix-ui/react-tabs": "^1.1.0",
     "@radix-ui/react-toast": "^1.2.1",
+    "@types/uuid": "^10.0.0",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
+    "firebase": "^12.14.0",
+    "firebase-admin": "^13.10.0",
     "framer-motion": "^11.3.30",
     "lucide-react": "^0.414.0",
     "next": "14.2.5",
@@ -34,9 +36,11 @@
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
     "tailwind-merge": "^2.4.0",
+    "uuid": "^14.0.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@netlify/plugin-nextjs": "^5.15.11",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/nodemailer": "^6.4.15",

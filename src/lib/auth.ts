@@ -1,5 +1,4 @@
 import { NextAuthOptions } from 'next-auth'
-import { PrismaAdapter } from '@auth/prisma-adapter'
 import GoogleProvider from 'next-auth/providers/google'
 import GitHubProvider from 'next-auth/providers/github'
 import CredentialsProvider from 'next-auth/providers/credentials'
@@ -7,7 +6,7 @@ import { compare } from 'bcryptjs'
 import { prisma } from './db'
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as any,
+  // JWT strategy — no database adapter needed; works on serverless (Netlify/Vercel)
   session: { strategy: 'jwt' },
   pages: {
     signIn: '/login',
@@ -41,18 +40,47 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      // Auto-create Firestore user record for OAuth sign-ins
+      if (account?.provider === 'google' || account?.provider === 'github') {
+        try {
+          const existing = await prisma.user.findUnique({ where: { email: user.email! } })
+          if (!existing) {
+            await prisma.user.create({
+              data: {
+                name: user.name,
+                email: user.email!,
+                image: user.image,
+                role: 'fan',
+              },
+            })
+          }
+        } catch (err) {
+          console.error('signIn user-create error:', err)
+        }
+      }
+      return true
+    },
+
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
-        const dbUser = await prisma.user.findUnique({ where: { id: user.id } })
-        token.role = dbUser?.role ?? 'fan'
+        token.role = (user as any).role ?? 'fan'
+      }
+      if (token.email && !token.role) {
+        try {
+          const dbUser = await prisma.user.findUnique({ where: { email: token.email } })
+          token.id = dbUser?.id ?? token.sub
+          token.role = dbUser?.role ?? 'fan'
+        } catch {}
       }
       return token
     },
+
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string
-        session.user.role = token.role as string
+        session.user.role = (token.role as string) ?? 'fan'
       }
       return session
     },
