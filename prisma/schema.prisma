@@ -1,0 +1,170 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String    @default("fan")
+  phone         String?
+  bio           String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  bookings      Booking[]
+  fanCards      FanCard[]
+  reviews       Review[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Celebrity {
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  category     String
+  subcategory  String?
+  bio          String
+  longBio      String?
+  nationality  String?
+  birthYear    Int?
+  imageUrl     String
+  galleryUrls  String?
+  meetPrice    Float
+  virtualPrice Float?
+  signingPrice Float?
+  fanCardPrice Float    @default(29.99)
+  rating       Float    @default(4.5)
+  reviewCount  Int      @default(0)
+  verified     Boolean  @default(true)
+  featured     Boolean  @default(false)
+  available    Boolean  @default(true)
+  tags         String?
+  instagram    String?
+  twitter      String?
+  youtube      String?
+  website      String?
+  totalBookings Int     @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  bookings     Booking[]
+  fanCards     FanCard[]
+  reviews      Review[]
+}
+
+model Booking {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id])
+  celebrityId    String
+  celebrity      Celebrity @relation(fields: [celebrityId], references: [id])
+  bookingDate    DateTime
+  duration       Int       @default(30)
+  type           String    @default("meet-greet")
+  status         String    @default("pending")
+  price          Float
+  currency       String    @default("USD")
+  guestName      String?
+  guestEmail     String?
+  guestPhone     String?
+  specialRequests String?
+  agentNotes     String?
+  confirmationCode String?  @unique
+  adminNotes     String?
+  paidAt         DateTime?
+  confirmedAt    DateTime?
+  cancelledAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model FanCard {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  celebrityId   String
+  celebrity     Celebrity @relation(fields: [celebrityId], references: [id])
+  tier          String    @default("bronze")
+  price         Float
+  cardNumber    String    @unique
+  message       String?
+  isActive      Boolean   @default(true)
+  purchasedAt   DateTime  @default(now())
+}
+
+model Review {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  celebrityId String
+  celebrity   Celebrity @relation(fields: [celebrityId], references: [id])
+  rating      Int
+  title       String?
+  body        String
+  verified    Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+}
+
+model AgentLog {
+  id        String   @id @default(cuid())
+  bookingId String?
+  userId    String?
+  action    String
+  input     String?
+  output    String?
+  emailSent Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String?
+  type      String
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  data      String?
+  createdAt DateTime @default(now())
+}
