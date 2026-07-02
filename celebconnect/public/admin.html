@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CelebConnect Admin</title>
+<link rel="stylesheet" href="/css/style.css">
+<style>
+  body { background: #f0f2f5; }
+  .admin-wrap { max-width: 1000px; margin: 24px auto; padding: 0 16px; }
+  .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .stat-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+  .stat-card { background: #fff; border-radius: 10px; padding: 14px; text-align: center; }
+  .stat-card .num { font-size: 22px; font-weight: 800; color: var(--blue); }
+  .stat-card .label { font-size: 12px; color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+  th { background: #fafafa; color: var(--muted); font-size: 12px; text-transform: uppercase; }
+  td img { width: 32px; height: 32px; border-radius: 50%; vertical-align: middle; margin-right: 8px; }
+  .row-actions button { margin-right: 6px; }
+  @media (max-width: 700px) { .stat-grid { grid-template-columns: repeat(2,1fr); } }
+</style>
+</head>
+<body>
+
+<div class="admin-wrap" id="loginScreen">
+  <div class="card" style="max-width:380px;margin:60px auto;">
+    <h2 style="text-align:center;">CelebConnect Admin</h2>
+    <form id="adminLoginForm">
+      <div class="field"><label>Email</label><input type="email" name="email" required></div>
+      <div class="field"><label>Password</label><input type="password" name="password" required></div>
+      <div class="form-error" id="loginError"></div>
+      <button class="btn" style="width:100%">Log in</button>
+    </form>
+  </div>
+</div>
+
+<div class="admin-wrap hidden" id="dashboard">
+  <div class="admin-header">
+    <h2>CelebConnect Admin</h2>
+    <div>
+      <a class="btn secondary small" href="/">View site</a>
+      <button class="btn secondary small" id="adminLogout">Log out</button>
+    </div>
+  </div>
+
+  <div class="stat-grid" id="statGrid"></div>
+
+  <div class="admin-header">
+    <h3>Celebrities</h3>
+    <button class="btn small" id="newCelebBtn">+ New celebrity</button>
+  </div>
+  <table>
+    <thead><tr><th>Profile</th><th>Category</th><th>Followers</th><th>Verified</th><th>Actions</th></tr></thead>
+    <tbody id="celebTable"></tbody>
+  </table>
+</div>
+
+<div id="modalRoot"></div>
+<div id="toastRoot"></div>
+
+<script src="/js/admin.js"></script>
+</body>
+</html>
